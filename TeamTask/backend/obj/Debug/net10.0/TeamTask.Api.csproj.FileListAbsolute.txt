@@ -123,3 +123,4 @@ D:\Project\Hackathon\TeamTask\backend\obj\Debug\net10.0\refint\TeamTask.Api.dll
 D:\Project\Hackathon\TeamTask\backend\obj\Debug\net10.0\TeamTask.Api.pdb
 D:\Project\Hackathon\TeamTask\backend\obj\Debug\net10.0\TeamTask.Api.genruntimeconfig.cache
 D:\Project\Hackathon\TeamTask\backend\obj\Debug\net10.0\ref\TeamTask.Api.dll
+D:\Project\Hackathon\TeamTask\backend\obj\Debug\net10.0\TeamTask.Api.sourcelink.json
