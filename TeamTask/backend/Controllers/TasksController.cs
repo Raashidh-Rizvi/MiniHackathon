@@ -1,8 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using TeamTask.Api.Data;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using TeamTask.Api.DTOs;
 using TeamTask.Api.Models;
+using TeamTask.Api.Repositories;
 
 namespace TeamTask.Api.Controllers
 {
@@ -10,11 +13,11 @@ namespace TeamTask.Api.Controllers
     [ApiController]
     public class TasksController : ControllerBase
     {
-        private readonly TaskDbContext _context;
+        private readonly ITaskRepository _repository;
 
-        public TasksController(TaskDbContext context)
+        public TasksController(ITaskRepository repository)
         {
-            _context = context;
+            _repository = repository;
         }
 
         // GET: api/tasks
@@ -24,7 +27,8 @@ namespace TeamTask.Api.Controllers
             [FromQuery] string? status,
             [FromQuery] string? assignee)
         {
-            var query = _context.Tasks.AsQueryable();
+            var allTasks = await _repository.GetTasksAsync();
+            var query = allTasks.AsQueryable();
 
             if (!string.IsNullOrEmpty(search))
             {
@@ -41,7 +45,7 @@ namespace TeamTask.Api.Controllers
                 query = query.Where(t => t.Assignee == assignee);
             }
 
-            var tasks = await query.OrderBy(t => t.DueDate).ToListAsync();
+            var tasks = query.OrderBy(t => t.DueDate).ToList();
             return Ok(tasks);
         }
 
@@ -49,7 +53,7 @@ namespace TeamTask.Api.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<TaskItem>> GetTask(Guid id)
         {
-            var task = await _context.Tasks.FindAsync(id);
+            var task = await _repository.GetTaskAsync(id);
 
             if (task == null)
             {
@@ -92,8 +96,7 @@ namespace TeamTask.Api.Controllers
                 UpdatedAt = DateTime.UtcNow
             };
 
-            _context.Tasks.Add(task);
-            await _context.SaveChangesAsync();
+            await _repository.CreateTaskAsync(task);
 
             return CreatedAtAction(nameof(GetTask), new { id = task.Id }, task);
         }
@@ -107,7 +110,7 @@ namespace TeamTask.Api.Controllers
                 return BadRequest("Due date cannot be in the past.");
             }
 
-            var task = await _context.Tasks.FindAsync(id);
+            var task = await _repository.GetTaskAsync(id);
             if (task == null)
             {
                 return NotFound();
@@ -120,7 +123,7 @@ namespace TeamTask.Api.Controllers
             task.Status = dto.Status;
             task.UpdatedAt = DateTime.UtcNow;
 
-            await _context.SaveChangesAsync();
+            await _repository.UpdateTaskAsync(task);
             return NoContent();
         }
 
@@ -134,7 +137,7 @@ namespace TeamTask.Api.Controllers
                 return BadRequest("Invalid status.");
             }
 
-            var task = await _context.Tasks.FindAsync(id);
+            var task = await _repository.GetTaskAsync(id);
             if (task == null)
             {
                 return NotFound();
@@ -143,7 +146,7 @@ namespace TeamTask.Api.Controllers
             task.Status = dto.Status;
             task.UpdatedAt = DateTime.UtcNow;
 
-            await _context.SaveChangesAsync();
+            await _repository.UpdateTaskAsync(task);
             return NoContent();
         }
 
@@ -151,15 +154,13 @@ namespace TeamTask.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTask(Guid id)
         {
-            var task = await _context.Tasks.FindAsync(id);
+            var task = await _repository.GetTaskAsync(id);
             if (task == null)
             {
                 return NotFound();
             }
 
-            _context.Tasks.Remove(task);
-            await _context.SaveChangesAsync();
-
+            await _repository.DeleteTaskAsync(id);
             return NoContent();
         }
     }
