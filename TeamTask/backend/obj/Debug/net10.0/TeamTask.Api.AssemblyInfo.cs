@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TeamTask.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+74ac86c13f4d8e2899271d8dcd91e5cc80d79d28")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+578341303ede54ca544256423921771b84da7485")]
 [assembly: System.Reflection.AssemblyProductAttribute("TeamTask.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TeamTask.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
